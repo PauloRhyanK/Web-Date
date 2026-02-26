@@ -26,10 +26,20 @@ Abra o URL mostrado no terminal (ex.: `http://localhost:5173`). Quem abrir prime
    - `VITE_FIREBASE_MESSAGING_SENDER_ID`
    - `VITE_FIREBASE_APP_ID`
 
+## Pixel art (sprites e cenário)
+
+Para bonecos e cenário em pixel art, coloque as imagens em:
+
+- **`public/sprites/player1.png`** — sprite sheet do jogador local ("Tu"). Formato: frames em linha horizontal; 4 frames de 32×48 px (imagem total 128×48). Frame 0 = parado, frames 1–3 = caminhada.
+- **`public/sprites/player2.png`** — sprite sheet do parceiro ("Par"). Mesma convenção (ex.: 4 frames de 32×48 px).
+- **`public/scenario.png`** — cenário da sala. Tamanho sugerido: 400×400 px (cobre o chão isométrico).
+
+Se os ficheiros não existirem ou falharem a carregar, a app usa o visual de fallback (avatares com cabeça/corpo e grid de tiles).
+
 ## Como usar
 
 - **Movimento:** WASD ou setas (teclado).
-- **Vídeo/áudio:** Permita câmera e microfone; o Player 2 liga-se automaticamente ao Player 1. Vídeos aparecem no canto inferior direito (local mutado, remoto com som).
+- **Vídeo/áudio:** Permita câmera e microfone; o Player 2 liga-se automaticamente ao Player 1. Vídeos aparecem nos cantos superiores (esquerdo = Tu, direito = Parceiro; local mutado, remoto com som).
 - **Música:** Clique em **Play música** para iniciar a música de fundo (obrigatório para desbloquear autoplay no browser). Coloque um ficheiro `music.mp3` em `public/` para ter música (ou edite `App.jsx` para usar outro URL).
 
 ## PeerJS em produção

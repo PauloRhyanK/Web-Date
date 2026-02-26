@@ -13,6 +13,7 @@ const ROOM_WIDTH = 400
 const ROOM_HEIGHT = 400
 const THROTTLE_MS = 50
 const MOVE_STEP = 8
+const WALK_DURATION_MS = 200
 
 function getRoomIdFromUrl() {
   const params = new URLSearchParams(window.location.search)
@@ -45,6 +46,11 @@ function App() {
   const pendingPositionRef = useRef(null)
   const audioRef = useRef(null)
   const claimStartedRef = useRef(false)
+  const lastMovedAtRef = useRef(0)
+  const partnerLastMovedAtRef = useRef(0)
+  const prevPartnerPositionRef = useRef(null)
+  const [myIsWalking, setMyIsWalking] = useState(false)
+  const [partnerIsWalking, setPartnerIsWalking] = useState(false)
 
   if (!myUserIdRef.current) {
     myUserIdRef.current = crypto.randomUUID()
@@ -104,7 +110,13 @@ function App() {
         setMyPosition({ x: me.x, y: me.y })
       }
       if (other) {
-        setPartnerPosition({ x: other.x, y: other.y })
+        const nextPartner = { x: other.x, y: other.y }
+        const prev = prevPartnerPositionRef.current
+        if (prev && (prev.x !== nextPartner.x || prev.y !== nextPartner.y)) {
+          partnerLastMovedAtRef.current = Date.now()
+        }
+        prevPartnerPositionRef.current = nextPartner
+        setPartnerPosition(nextPartner)
         setPartnerOnline(!!other.isOnline)
       } else {
         setPartnerOnline(false)
@@ -137,6 +149,9 @@ function App() {
     const handleKeyDown = (e) => {
       const key = e.key.toLowerCase()
       const step = MOVE_STEP
+      if (['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(key)) {
+        lastMovedAtRef.current = Date.now()
+      }
       setMyPosition((prev) => {
         let nx = prev.x
         let ny = prev.y
@@ -170,6 +185,16 @@ function App() {
       if (throttleScheduledRef.current) clearTimeout(throttleScheduledRef.current)
     }
   }, [roomId, iamPlayer1, flushPosition])
+
+  useEffect(() => {
+    const tick = () => {
+      const now = Date.now()
+      setMyIsWalking(now - lastMovedAtRef.current < WALK_DURATION_MS)
+      setPartnerIsWalking(now - partnerLastMovedAtRef.current < WALK_DURATION_MS)
+    }
+    const id = setInterval(tick, 100)
+    return () => clearInterval(id)
+  }, [])
 
   const copyRoomLink = () => {
     const url = window.location.href
@@ -227,6 +252,8 @@ function App() {
         partnerOnline={partnerOnline}
         roomWidth={ROOM_WIDTH}
         roomHeight={ROOM_HEIGHT}
+        myIsWalking={myIsWalking}
+        partnerIsWalking={partnerIsWalking}
       />
       <VideoComm roomId={roomId} iamPlayer1={iamPlayer1} />
     </div>
