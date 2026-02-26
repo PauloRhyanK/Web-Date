@@ -64,10 +64,8 @@ function App() {
     if (!roomId) return
 
     const unsub = subscribeRoom(roomId, (data) => {
-      if (!data) return
-
-      const p1 = data.player_1
-      const p2 = data.player_2
+      const p1 = data?.player_1
+      const p2 = data?.player_2
 
       if (!claimed && !claimStartedRef.current) {
         claimStartedRef.current = true
@@ -95,6 +93,8 @@ function App() {
         })
         return
       }
+
+      if (!data) return
 
       const me = p1?.userId === myUserId ? p1 : p2?.userId === myUserId ? p2 : null
       const other = p1?.userId === myUserId ? p2 : p2?.userId === myUserId ? p1 : null
