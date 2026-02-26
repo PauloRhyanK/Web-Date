@@ -46,6 +46,24 @@ Se os ficheiros não existirem ou falharem a carregar, a app usa o visual de fal
 
 Por defeito usa o servidor público (`0.peerjs.com`), que pode ter limites. Para uso contínuo, configure um [PeerJS Server](https://github.com/peers/peerjs-server) ou um serviço cloud e defina `VITE_PEERJS_HOST` no `.env`.
 
+## Deploy na Vercel
+
+1. Envie o projeto para um repositório Git (GitHub, GitLab ou Bitbucket).
+2. Em [vercel.com](https://vercel.com), **Add New Project** e importe o repositório.
+3. A Vercel deteta Vite automaticamente (`Build Command`: `npm run build`, **Output Directory**: `dist`). Não é preciso alterar.
+4. **Environment Variables:** em **Settings → Environment Variables** adicione as mesmas variáveis que usa no `.env` local (são injetadas no build; o Vite expõe as que começam por `VITE_`):
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_DATABASE_URL`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+   - (opcional) `VITE_PEERJS_HOST` se usar servidor PeerJS próprio
+5. **Deploy.** O link da sala (ex.: `https://seu-projeto.vercel.app/?room=abc123`) funciona igual; partilhe esse URL com o parceiro.
+
+O ficheiro `vercel.json` na raiz configura o rewrite para SPA (todas as rotas servem `index.html`), para que links diretos continuem a funcionar.
+
 ## Stack
 
 - **Frontend:** React (Vite), Tailwind CSS  
