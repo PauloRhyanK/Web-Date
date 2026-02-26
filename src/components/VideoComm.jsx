@@ -102,37 +102,52 @@ export default function VideoComm({ roomId, iamPlayer1 }) {
     call.on('error', () => {})
   }, [peerIdHost, localStream, peerReady])
 
-  if (error) {
-    return (
-      <div className="fixed bottom-4 right-4 px-3 py-2 rounded bg-slate-700 text-sm text-amber-200">
-        {error}
-      </div>
-    )
-  }
-
-  if (!localStream) {
-    return (
-      <div className="fixed bottom-4 right-4 px-3 py-2 rounded bg-slate-700 text-sm">
-        A pedir permissão de câmera…
-      </div>
-    )
-  }
+  const videoPanelClass = 'w-72 h-56 rounded-lg border-2 bg-slate-900 overflow-hidden flex flex-col shadow-xl'
+  const labelClass = 'text-xs font-semibold px-2 py-1 text-white/90'
 
   return (
-    <div className="fixed bottom-4 right-4 flex flex-col gap-2">
-      <video
-        ref={remoteVideoRef}
-        autoPlay
-        playsInline
-        className="w-40 h-30 object-cover rounded border-2 border-emerald-500 bg-black"
-      />
-      <video
-        ref={localVideoRef}
-        autoPlay
-        playsInline
-        muted
-        className="w-32 h-24 object-cover rounded border-2 border-violet-500 bg-black"
-      />
-    </div>
+    <>
+      <div className="fixed top-4 left-4 flex flex-col gap-1">
+        <div className={`${videoPanelClass} border-violet-500`}>
+          <span className={`${labelClass} bg-violet-600/80`}>Tu</span>
+          {error && (
+            <div className="flex-1 flex items-center justify-center p-3 text-amber-200 text-sm text-center">
+              {error}
+            </div>
+          )}
+          {!localStream && !error && (
+            <div className="flex-1 flex items-center justify-center p-3 text-slate-400 text-sm">
+              A pedir permissão de câmera…
+            </div>
+          )}
+          {localStream && (
+            <video
+              ref={localVideoRef}
+              autoPlay
+              playsInline
+              muted
+              className="flex-1 w-full h-full min-h-0 object-cover bg-black"
+            />
+          )}
+        </div>
+      </div>
+      <div className="fixed top-4 right-4 flex flex-col gap-1">
+        <div className={`${videoPanelClass} border-emerald-500`}>
+          <span className={`${labelClass} bg-emerald-600/80`}>Parceiro</span>
+          {remoteStream ? (
+            <video
+              ref={remoteVideoRef}
+              autoPlay
+              playsInline
+              className="flex-1 w-full h-full min-h-0 object-cover bg-black"
+            />
+          ) : (
+            <div className="flex-1 flex items-center justify-center p-3 text-slate-500 text-sm">
+              À espera do parceiro…
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   )
 }
