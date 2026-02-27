@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getDatabase, ref, set, onValue, onDisconnect } from 'firebase/database'
+import { getDatabase, ref, set, update, onValue, onDisconnect } from 'firebase/database'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -27,9 +27,13 @@ export function peerIdHostRef(roomId) {
 }
 
 export async function writePlayerPosition(roomId, playerKey, x, y, isOnline = true, userId = null) {
-  const data = { x, y, isOnline }
-  if (userId != null) data.userId = userId
-  await set(playerRef(roomId, playerKey), data)
+  const updates = { [`${playerKey}/x`]: x, [`${playerKey}/y`]: y, [`${playerKey}/isOnline`]: isOnline }
+  if (userId != null) updates[`${playerKey}/userId`] = userId
+  await update(roomRef(roomId), updates)
+}
+
+export async function writePlayerDancing(roomId, playerKey, isDancing) {
+  await update(roomRef(roomId), { [`${playerKey}/isDancing`]: isDancing })
 }
 
 export function subscribeRoom(roomId, callback) {

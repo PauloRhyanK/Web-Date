@@ -7,3 +7,53 @@ body {
   min-height: 100vh;
   overflow: hidden;
 }
+
+@keyframes dance-bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes dance {
+  0% {
+    transform: translateY(0) scaleX(1);
+  }
+  25% {
+    transform: translateY(-8px) scaleX(1);
+  }
+  50% {
+    transform: translateY(0) scaleX(-1);
+  }
+  75% {
+    transform: translateY(-8px) scaleX(-1);
+  }
+  100% {
+    transform: translateY(0) scaleX(1);
+  }
+}
+
+@keyframes guitar-swing {
+  0%, 100% {
+    transform: rotate(-15deg);
+    transform-origin: bottom center;
+  }
+  50% {
+    transform: rotate(15deg);
+    transform-origin: bottom center;
+  }
+}
+
+.animate-dance-bob {
+  animation: dance-bob 1.3s ease-in-out infinite;
+}
+
+.animate-dance {
+  animation: dance 0.6s ease-in-out infinite;
+}
+
+.animate-guitar-swing {
+  animation: guitar-swing 0.8s ease-in-out infinite;
+}

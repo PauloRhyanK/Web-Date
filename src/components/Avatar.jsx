@@ -25,7 +25,8 @@ export default function Avatar({
     if (isWalking) {
       walkIntervalRef.current = setInterval(() => {
         setFrameIndex((prev) => (prev >= FRAME_COUNT - 1 ? 1 : prev + 1))
-      }, WALK_FRAME_INTERVAL_MS)
+      }, 
+    )
     } else {
       setFrameIndex(0)
     }
@@ -48,7 +49,8 @@ export default function Avatar({
           height: FRAME_HEIGHT,
           transform: 'rotateZ(-45deg) rotateX(-60deg)',
           transformStyle: 'preserve-3d',
-          zIndex,
+          zIndex, 
+          
         }}
       >
         <div

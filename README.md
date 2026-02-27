@@ -26,15 +26,16 @@ Abra o URL mostrado no terminal (ex.: `http://localhost:5173`). Quem abrir prime
    - `VITE_FIREBASE_MESSAGING_SENDER_ID`
    - `VITE_FIREBASE_APP_ID`
 
-## Pixel art (sprites e cenário)
+## Assets da cena 2D
 
-Para bonecos e cenário em pixel art, coloque as imagens em:
+Para o palco 2D (cenário + personagens), coloque em `public/`:
 
-- **`public/sprites/player1.png`** — sprite sheet do jogador local ("Tu"). Formato: frames em linha horizontal; 4 frames de 32×48 px (imagem total 128×48). Frame 0 = parado, frames 1–3 = caminhada.
-- **`public/sprites/player2.png`** — sprite sheet do parceiro ("Par"). Mesma convenção (ex.: 4 frames de 32×48 px).
-- **`public/scenario.png`** — cenário da sala. Tamanho sugerido: 400×400 px (cobre o chão isométrico).
+- **`public/scenario.png`** — imagem de fundo do cenário (ex.: 800×600 px; `background-size: cover`).
+- **`public/player1.png`** — personagem à esquerda (Girlfriend).
+- **`public/player2.png`** — personagem à direita (Boyfriend); só aparece quando o parceiro está online.
+- **`public/guitar.png`** — guitarra do Boyfriend (animação de swing).
 
-Se os ficheiros não existirem ou falharem a carregar, a app usa o visual de fallback (avatares com cabeça/corpo e grid de tiles).
+Se o cenário falhar a carregar, é usado um fundo sólido; se um personagem ou a guitarra falhar, esse elemento fica oculto.
 
 ## Como usar
 
