@@ -66,7 +66,7 @@ export default function Avatar({
         />
         <div
           role="img"
-          aria-label={isLocal ? 'Gatito' : 'Gatita'}
+          aria-label={isLocal ? 'Eu' : 'Parceiro'}
           style={{
             width: FRAME_WIDTH,
             height: FRAME_HEIGHT,

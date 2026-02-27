@@ -4,6 +4,7 @@ import {
   subscribeRoom,
   writePlayerPosition,
   writePlayerDancing,
+  writeQuestionIndex,
   setupOnDisconnect,
   setRoomMusic,
 } from './lib/firebase'
@@ -14,6 +15,29 @@ import VideoComm from './components/VideoComm'
 const THROTTLE_MS = 50
 const MOVE_STEP = 8
 const WALK_DURATION_MS = 200
+
+const QUESTIONS = [
+  'Qual foi o momento mais especial do nosso dia?',
+  'O que mais gostas em mim hoje?',
+  'Se pudéssemos viajar agora, para onde iríamos?',
+  'Qual música combina mais com este momento?',
+  'O que te fez sorrir hoje?',
+  'Qual é o nosso maior sonho juntos?',
+  'Se tivesses de descrever nós dois em uma palavra, qual seria?',
+  'Qual foi o nosso encontro mais memorável?',
+  'O que mais te surpreendeu em mim ultimamente?',
+  'Qual hábito meu tu achas mais fofo?',
+  'O que gostarias que fizéssemos mais vezes juntos?',
+  'Qual é a tua lembrança favorita nossa?',
+  'Se tivéssemos um super-poder em casal, qual seria?',
+  'O que tu achas que mais combinamos?',
+  'Qual filme ou série mais parece com a nossa história?',
+  'Qual pequeno gesto meu te deixa feliz?',
+  'Que novo hábito em casal gostarias de criar?',
+  'O que mais admiras em mim?',
+  'Que promessa gostarias de fazermos um ao outro?',
+  'O que tu estás mais ansioso(a) para vivermos ainda?',
+]
 
 function getRoomIdFromUrl() {
   const params = new URLSearchParams(window.location.search)
@@ -58,6 +82,7 @@ function App() {
   const [partnerIsDancing, setPartnerIsDancing] = useState(false)
   const myIsDancingRef = useRef(false)
   const [myFacingRight, setMyFacingRight] = useState(true)
+  const [questionIndex, setQuestionIndex] = useState(0)
 
   useEffect(() => {
     myIsDancingRef.current = myIsDancing
@@ -75,7 +100,8 @@ function App() {
   const myUserId = myUserIdRef.current
 
   useEffect(() => {
-    let id = getRoomIdFromUrl()
+    const idFromUrl = getRoomIdFromUrl()
+    let id = idFromUrl
     if (!id) {
       id = generateRoomId()
       ensureRoomInUrl(id)
@@ -126,6 +152,10 @@ function App() {
       if (data.music) {
         setMusicPlaying(!!data.music.playing)
         setMusicStartedAt(data.music.playing ? (data.music.startedAt ?? null) : null)
+      }
+      if (typeof data.questionIndex === 'number' && Number.isFinite(data.questionIndex)) {
+        const clamped = Math.max(0, Math.min(QUESTIONS.length - 1, Math.floor(data.questionIndex)))
+        setQuestionIndex(clamped)
       }
       if (me) {
         setIamPlayer1(me === p1)
@@ -317,6 +347,36 @@ function App() {
           partnerDancing={partnerIsDancing}
           myFacingRight={myFacingRight}
         />
+      </div>
+      <div className="fixed inset-0 z-20 pointer-events-none flex justify-center" style={{ alignItems: 'center', paddingBottom: '300px' }}>
+        <div className="pointer-events-auto bg-black/70 text-white px-6 py-4 rounded-xl text-lg md:text-xl font-semibold shadow-2xl flex flex-col items-center gap-3 max-w-xl text-center">
+          <span className="text-slate-300 text-sm font-normal">{questionIndex + 1}/{QUESTIONS.length}</span>
+          <span>{QUESTIONS[questionIndex]}</span>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-medium"
+              onClick={() => {
+                const next = questionIndex === 0 ? QUESTIONS.length - 1 : questionIndex - 1
+                setQuestionIndex(next)
+                if (roomId) writeQuestionIndex(roomId, next).catch(() => {})
+              }}
+            >
+              Anterior
+            </button>
+            <button
+              type="button"
+              className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-medium"
+              onClick={() => {
+                const next = questionIndex === QUESTIONS.length - 1 ? 0 : questionIndex + 1
+                setQuestionIndex(next)
+                if (roomId) writeQuestionIndex(roomId, next).catch(() => {})
+              }}
+            >
+              Próxima
+            </button>
+          </div>
+        </div>
       </div>
       <div className="fixed left-0 bottom-0 p-4 flex flex-col gap-3 z-10">
         {partnerOnline && (

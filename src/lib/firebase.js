@@ -65,3 +65,7 @@ export function musicRef(roomId) {
 export function setRoomMusic(roomId, data) {
   return set(musicRef(roomId), data)
 }
+
+export async function writeQuestionIndex(roomId, questionIndex) {
+  await update(roomRef(roomId), { questionIndex })
+}
