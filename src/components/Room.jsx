@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import Avatar from './Avatar'
+import Room3D from './Room3D'
+import ErrorBoundary from './ErrorBoundary'
 
 const TILE_SIZE = 50
 const TILE_COLS = 8
@@ -44,7 +46,7 @@ export default function Room({
     }
   }
 
-  return (
+  const room2DFallback = (
     <div
       className="relative flex items-center justify-center"
       style={{ perspective: '800px' }}
@@ -93,5 +95,19 @@ export default function Room({
         )}
       </div>
     </div>
+  )
+
+  return (
+    <ErrorBoundary fallback={room2DFallback}>
+      <Room3D
+        myPosition={myPosition}
+        partnerPosition={partnerPosition}
+        partnerOnline={partnerOnline}
+        roomWidth={roomWidth}
+        roomHeight={roomHeight}
+        myIsWalking={myIsWalking}
+        partnerIsWalking={partnerIsWalking}
+      />
+    </ErrorBoundary>
   )
 }

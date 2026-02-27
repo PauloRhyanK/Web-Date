@@ -36,6 +36,18 @@ Para bonecos e cenário em pixel art, coloque as imagens em:
 
 Se os ficheiros não existirem ou falharem a carregar, a app usa o visual de fallback (avatares com cabeça/corpo e grid de tiles).
 
+## Personagem 3D (Three.js)
+
+Para usar personagens 3D com animação skeletal (idle/walk) em vez dos sprites ou do fallback:
+
+- Coloque um ficheiro **`public/models/character.glb`** (formato glTF 2.0 binário).
+- O modelo deve ter **skinning** (esqueleto) e pelo menos dois **AnimationClips** com nomes que a app reconhece:
+  - **Idle:** um de `"Idle"`, `"idle"`, `"IDLE"`.
+  - **Walk:** um de `"Walk"`, `"walk"`, `"Walking"`, `"walking"`.
+- Se o ficheiro não existir ou falhar a carregar, a app usa automaticamente a sala 2D (tiles + avatares em CSS/sprites).
+
+Sugestão de modelos: [glTF Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models) ou modelos com animações do [Mixamo](https://www.mixamo.com/) exportados em glTF.
+
 ## Como usar
 
 - **Movimento:** WASD ou setas (teclado).
