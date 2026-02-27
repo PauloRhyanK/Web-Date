@@ -53,3 +53,11 @@ export function subscribePeerIdHost(roomId, callback) {
     callback(snapshot.val())
   })
 }
+
+export function musicRef(roomId) {
+  return ref(db, `${roomId}/music`)
+}
+
+export function setRoomMusic(roomId, data) {
+  return set(musicRef(roomId), data)
+}

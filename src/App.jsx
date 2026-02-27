@@ -4,6 +4,7 @@ import {
   subscribeRoom,
   writePlayerPosition,
   setupOnDisconnect,
+  setRoomMusic,
 } from './lib/firebase'
 import { runTransaction } from 'firebase/database'
 import Room from './components/Room'
@@ -37,6 +38,8 @@ function App() {
   const [iamPlayer1, setIamPlayer1] = useState(null)
   const [partnerOnline, setPartnerOnline] = useState(false)
   const [musicPlaying, setMusicPlaying] = useState(false)
+  const [musicStartedAt, setMusicStartedAt] = useState(null)
+  const [volume, setVolume] = useState(0.7)
   const [claimed, setClaimed] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
 
@@ -105,6 +108,10 @@ function App() {
       const me = p1?.userId === myUserId ? p1 : p2?.userId === myUserId ? p2 : null
       const other = p1?.userId === myUserId ? p2 : p2?.userId === myUserId ? p1 : null
 
+      if (data.music) {
+        setMusicPlaying(!!data.music.playing)
+        setMusicStartedAt(data.music.playing ? (data.music.startedAt ?? null) : null)
+      }
       if (me) {
         setIamPlayer1(me === p1)
         setMyPosition({ x: me.x, y: me.y })
@@ -205,16 +212,40 @@ function App() {
   }
 
   const toggleMusic = () => {
-    const audio = audioRef.current
-    if (!audio) return
+    if (!roomId) return
     if (musicPlaying) {
-      audio.pause()
-      setMusicPlaying(false)
+      setRoomMusic(roomId, { playing: false })
     } else {
-      audio.play().catch(() => {})
-      setMusicPlaying(true)
+      setRoomMusic(roomId, { playing: true, startedAt: Date.now() })
     }
   }
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.volume = volume
+  }, [volume])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio || musicStartedAt == null) return
+    if (musicPlaying) {
+      const syncCurrentTime = () => {
+        const elapsed = (Date.now() - musicStartedAt) / 1000
+        if (audio.duration && !Number.isNaN(audio.duration)) {
+          audio.currentTime = elapsed % audio.duration
+        } else {
+          audio.currentTime = Math.min(elapsed, 999999)
+        }
+      }
+      audio.play().catch(() => {})
+      syncCurrentTime()
+      const id = setInterval(syncCurrentTime, 500)
+      return () => clearInterval(id)
+    } else {
+      audio.pause()
+    }
+  }, [musicPlaying, musicStartedAt])
 
   if (!roomId) {
     return (
@@ -242,6 +273,18 @@ function App() {
         >
           {musicPlaying ? 'Pausar música' : 'Play música'}
         </button>
+        <label className="flex items-center gap-2">
+          <span className="text-sm text-slate-300">Volume</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+            className="w-24 h-2 rounded-lg accent-violet-500"
+          />
+        </label>
         {partnerOnline && (
           <span className="text-green-400 text-sm">Parceiro online</span>
         )}
