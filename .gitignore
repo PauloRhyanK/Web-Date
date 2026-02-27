@@ -1,6 +1,3 @@
 node_modules/
 .env
 .cursor/
-
-# Ficheiros grandes (GitHub limita a 100 MB por ficheiro)
-public/music.mp3
