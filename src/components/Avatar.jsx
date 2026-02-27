@@ -50,7 +50,7 @@ export default function Avatar({
           transform: 'rotateZ(-45deg) rotateX(-60deg)',
           transformStyle: 'preserve-3d',
           zIndex, 
-          
+
         }}
       >
         <div
@@ -66,7 +66,7 @@ export default function Avatar({
         />
         <div
           role="img"
-          aria-label={isLocal ? 'Tu' : 'Parceiro'}
+          aria-label={isLocal ? 'Gatito' : 'Gatita'}
           style={{
             width: FRAME_WIDTH,
             height: FRAME_HEIGHT,

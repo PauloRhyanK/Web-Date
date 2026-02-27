@@ -102,14 +102,14 @@ export default function VideoComm({ roomId, iamPlayer1 }) {
     call.on('error', () => {})
   }, [peerIdHost, localStream, peerReady])
 
-  const videoPanelClass = 'w-72 h-56 rounded-lg border-2 bg-slate-900 overflow-hidden flex flex-col shadow-xl'
+  const videoPanelClass = 'w-[36rem] h-[28rem] rounded-lg border-2 bg-slate-900 overflow-hidden flex flex-col shadow-xl'
   const labelClass = 'text-xs font-semibold px-2 py-1 text-white/90'
 
   return (
     <>
       <div className="fixed top-4 left-4 flex flex-col gap-1">
         <div className={`${videoPanelClass} border-violet-500`}>
-          <span className={`${labelClass} bg-violet-600/80`}>Tu</span>
+          <span className={`${labelClass} bg-violet-600/80`}>Gatito</span>
           {error && (
             <div className="flex-1 flex items-center justify-center p-3 text-amber-200 text-sm text-center">
               {error}
@@ -133,7 +133,7 @@ export default function VideoComm({ roomId, iamPlayer1 }) {
       </div>
       <div className="fixed top-4 right-4 flex flex-col gap-1">
         <div className={`${videoPanelClass} border-emerald-500`}>
-          <span className={`${labelClass} bg-emerald-600/80`}>Parceiro</span>
+          <span className={`${labelClass} bg-emerald-600/80`}>Gatita</span>
           {remoteStream ? (
             <video
               ref={remoteVideoRef}

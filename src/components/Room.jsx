@@ -40,10 +40,6 @@ export default function Room({
   const bottomPct = MAX_BOTTOM * (1 - myY / safeH)
   const partnerBottomPct = MAX_BOTTOM * (1 - partnerY / safeH)
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/0d58abb1-ca99-4331-bb9d-ff405728f431',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Room.jsx:render',message:'room position',data:{myX,myY,w,h,leftPct,bottomPct},timestamp:Date.now(),hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
-
   const mySprite = iamPlayer1 ? (isDancing ? PLAYER1_DANCE_URL : PLAYER1_URL) : (isDancing ? PLAYER2_DANCE_URL : PLAYER2_URL)
   const partnerSprite = iamPlayer1 ? (partnerDancing ? PLAYER2_DANCE_URL : PLAYER2_URL) : (partnerDancing ? PLAYER1_DANCE_URL : PLAYER1_URL)
   const showGuitarOnMe = iamPlayer1 && isDancing

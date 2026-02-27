@@ -132,9 +132,6 @@ function App() {
         const mePos = { x: me.x, y: me.y }
         const last = lastWrittenPositionRef.current
         const fromOurWrite = last && last.x === mePos.x && last.y === mePos.y
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/0d58abb1-ca99-4331-bb9d-ff405728f431',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:sub',message:'sub me',data:{mePos,last,fromOurWrite,willSet:!last||fromOurWrite},timestamp:Date.now(),hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
         if (!last || fromOurWrite) {
           setMyPosition(mePos)
           if (!last) lastWrittenPositionRef.current = mePos
@@ -179,9 +176,7 @@ function App() {
 
   useEffect(() => {
     if (!roomId) return
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/0d58abb1-ca99-4331-bb9d-ff405728f431',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:keyEffect',message:'keydown listener attached',data:{roomId},timestamp:Date.now(),hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
+
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
 
     const handleKeyDown = (e) => {
@@ -216,9 +211,6 @@ function App() {
         nx = clamp(nx, 0, rw)
         ny = clamp(ny, 0, rh)
         const next = { x: nx, y: ny }
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/0d58abb1-ca99-4331-bb9d-ff405728f431',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'App.jsx:keydown',message:'move',data:{key,prev,next,rw,rh},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
         pendingPositionRef.current = next
         lastWrittenPositionRef.current = next
         const now = Date.now()
