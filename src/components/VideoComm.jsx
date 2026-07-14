@@ -2,6 +2,25 @@ import { useState, useEffect, useRef } from 'react'
 import Peer from 'peerjs'
 import { setPeerIdHost, subscribePeerIdHost } from '../lib/firebase'
 
+const DEFAULT_ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:freeturn.net:3478' },
+  { urls: 'turn:freeturn.net:3478', username: 'free', credential: 'free' },
+  { urls: 'turns:freeturn.net:5349', username: 'free', credential: 'free' },
+]
+
+function getIceServers() {
+  try {
+    const env = import.meta.env.VITE_ICE_SERVERS
+    if (env && typeof env === 'string') {
+      const parsed = JSON.parse(env)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch (_) {}
+  return DEFAULT_ICE_SERVERS
+}
+
 export default function VideoComm({ roomId, iamPlayer1 }) {
   const [localStream, setLocalStream] = useState(null)
   const [remoteStream, setRemoteStream] = useState(null)
@@ -54,13 +73,7 @@ export default function VideoComm({ roomId, iamPlayer1 }) {
       port: 443,
       path: '/',
       secure: true,
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun2.l.google.com:19302' },
-        ],
-      },
+      config: { iceServers: getIceServers() },
     })
     peerRef.current = peer
 
@@ -100,14 +113,49 @@ export default function VideoComm({ roomId, iamPlayer1 }) {
     return () => unsub()
   }, [roomId, iamPlayer1, localStream])
 
+  const callAttemptRef = useRef(0)
+  const [retryTrigger, setRetryTrigger] = useState(0)
+
   useEffect(() => {
     if (!peerIdHost || !localStream || !peerRef.current || !peerReady) return
     const peer = peerRef.current
     const call = peer.call(peerIdHost, localStream)
     if (!call) return
-    call.on('stream', (stream) => setRemoteStream(stream))
-    call.on('error', () => {})
-  }, [peerIdHost, localStream, peerReady])
+
+    const maxAttempts = 4
+    const retryDelayMs = 3000
+    const streamTimeoutMs = 15000
+    let streamReceived = false
+
+    const scheduleRetry = () => {
+      callAttemptRef.current += 1
+      if (callAttemptRef.current < maxAttempts) {
+        setRemoteStream(null)
+        setTimeout(() => setRetryTrigger((t) => t + 1), retryDelayMs)
+      }
+    }
+
+    const streamTimeout = setTimeout(() => {
+      if (!streamReceived) scheduleRetry()
+    }, streamTimeoutMs)
+
+    call.on('stream', (stream) => {
+      streamReceived = true
+      clearTimeout(streamTimeout)
+      callAttemptRef.current = 0
+      setRemoteStream(stream)
+    })
+    call.on('error', () => {
+      clearTimeout(streamTimeout)
+      scheduleRetry()
+    })
+    call.on('close', () => clearTimeout(streamTimeout))
+
+    return () => {
+      clearTimeout(streamTimeout)
+      try { call.close() } catch (_) {}
+    }
+  }, [peerIdHost, localStream, peerReady, retryTrigger])
 
   const videoPanelClass = 'w-[36rem] h-[28rem] rounded-lg border-2 bg-slate-900 overflow-hidden flex flex-col shadow-xl'
   const labelClass = 'text-xs font-semibold px-2 py-1 text-white/90'
